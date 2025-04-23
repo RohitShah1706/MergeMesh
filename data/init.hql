@@ -1,9 +1,9 @@
 -- Create the table (external if you want to manage files yourself)
 CREATE TABLE IF NOT EXISTS graderoster (
-    student_ID STRING,
+    student_id STRING,
     course_id STRING,
     roll_no STRING,
-    email_ID STRING,
+    email_id STRING,
     grade STRING
 )
 ROW FORMAT DELIMITED

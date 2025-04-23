@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: hive_server
+
+server:
+  port: 5001
+
