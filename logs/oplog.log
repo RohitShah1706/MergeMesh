@@ -1,0 +1,2 @@
+{"operation":"UPDATE","tableName":"graderoster","data":{"studentId":"SID1033","courseId":"CSE016","grade":"B"},"timestamp":"2025-04-23T11:20:34.205394069"}
+{"operation":"UPDATE","tableName":"graderoster","data":{"studentId":"SID1033","courseId":"CSE016","newGrade":"B"},"timestamp":"2025-04-23T11:25:15.239281678"}

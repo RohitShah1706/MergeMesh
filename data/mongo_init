@@ -1,0 +1,4 @@
+
+##Import data from csv
+mongoimport --username myuser --password mypassword --authenticationDatabase admin \
+  --db mergemesh --collection graderoster --type csv --file '/mydata/student_course_grades.csv' --headerline

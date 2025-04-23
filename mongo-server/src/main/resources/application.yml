@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: mongo-server
+server:
+  port: 5002
