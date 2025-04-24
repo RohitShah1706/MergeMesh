@@ -77,6 +77,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- mergemesh shared package -->
+		<dependency>
+			<groupId>com.mergemesh</groupId>
+			<artifactId>shared-library</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

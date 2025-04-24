@@ -1,6 +1,6 @@
 package com.mergemesh.postgres_server.service;
 
-import com.mergemesh.postgres_server.shared.OplogEntry;
+import com.mergemesh.shared.OplogEntry;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;

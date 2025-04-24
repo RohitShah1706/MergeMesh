@@ -15,6 +15,7 @@ services:
   #   restart: unless-stopped
 
   # psql -U myuser -d mergemesh
+  # 
   postgres:
     container_name: postgres
     image: postgres:16.4-alpine

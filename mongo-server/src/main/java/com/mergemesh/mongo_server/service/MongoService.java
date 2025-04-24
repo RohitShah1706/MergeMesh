@@ -1,6 +1,6 @@
 package com.mergemesh.mongo_server.service;
 
-import com.mergemesh.mongo_server.shared.OplogEntry;
+import com.mergemesh.shared.OplogEntry;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;

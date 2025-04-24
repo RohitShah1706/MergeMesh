@@ -1,4 +1,4 @@
-package com.mergemesh.hive_server.shared;
+package com.mergemesh.shared;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
