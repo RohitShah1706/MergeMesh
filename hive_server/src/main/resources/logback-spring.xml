@@ -8,7 +8,7 @@
 
     <!-- File appender only for Oplog -->
     <appender name="OPLOG" class="ch.qos.logback.core.FileAppender">
-        <file>logs/oplog-hive.log</file>
+        <file>logs/oplog_hive.log</file>
         <append>true</append>
         <encoder>
             <pattern>%msg%n</pattern>
