@@ -43,4 +43,22 @@ public class MongoService {
         OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, LocalDateTime.now().toString());
         loggerService.logToFile(oplogEntry.toString());
     }
+
+    public void insertGrade(Map<String, String> req) {
+        String studentId = req.get("studentId");
+        String courseId = req.get("courseId");
+        String grade = req.get("grade");
+    
+        // Create a new document to insert
+        Document doc = new Document("student-ID", studentId)
+                            .append("course-id", courseId)
+                            .append("grade", grade);
+    
+        // Insert the document into the collection
+        collection.insertOne(doc);
+    
+        // Log the operation
+        OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+        loggerService.logToFile(oplogEntry.toString());
+    }
 }
