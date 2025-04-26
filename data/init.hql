@@ -1,5 +1,25 @@
--- Create the table (external if you want to manage files yourself)
+SET hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
+SET hive.support.concurrency=true;
+SET hive.enforce.bucketing=true; -- Optional in Hive 3.x and later
+SET hive.exec.dynamic.partition.mode=nonstrict;
+SET hive.compactor.initiator.on=true;
+SET hive.compactor.worker.threads=1;
+
 CREATE TABLE IF NOT EXISTS graderoster (
+    student_id STRING,
+    course_id STRING,
+    roll_no STRING,
+    email_id STRING,
+    grade STRING
+)
+STORED AS ORC
+TBLPROPERTIES (
+    "transactional"="true",
+    "orc.compress"="ZLIB"
+);
+
+-- Step 1: Create a staging table using TEXTFILE
+CREATE EXTERNAL TABLE graderoster_stage (
     student_id STRING,
     course_id STRING,
     roll_no STRING,
@@ -11,6 +31,9 @@ FIELDS TERMINATED BY ','
 STORED AS TEXTFILE
 TBLPROPERTIES ("skip.header.line.count"="1");
 
--- Load the data from a CSV file (replace with your HDFS/local path)
+-- Step 2: Load data into the staging table
 LOAD DATA LOCAL INPATH '/opt/hive/mydata/student_course_grades.csv'
-INTO TABLE graderoster;
+INTO TABLE graderoster_stage;
+
+-- Step 3: Insert into ORC table
+INSERT INTO TABLE graderoster SELECT * FROM graderoster_stage;

@@ -1,21 +1,22 @@
 services:
   # docker exec -it hive4 beeline -u 'jdbc:hive2://localhost:10000/'
   # docker exec -it hive4 bash
-  # hive:
-  #   image: apache/hive:4.0.1
-  #   container_name: hive4
-  #   ports:
-  #     - "10000:10000"
-  #     - "10002:10002"
-  #   environment:
-  #     SERVICE_NAME: hiveserver2
-  #   volumes:
-  #     - ./data:/opt/hive/mydata
-  #     - ./output:/opt/hive/myoutput
-  #   restart: unless-stopped
+  # source ./mydata/init.hql
+  hive:
+    image: apache/hive:4.0.1
+    container_name: hive4
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    environment:
+      SERVICE_NAME: hiveserver2
+    volumes:
+      - ./data:/opt/hive/mydata
+      - ./output:/opt/hive/myoutput
+    restart: unless-stopped
 
   # psql -U myuser -d mergemesh
-  # 
+  # \i /mydata/init.sql
   postgres:
     container_name: postgres
     image: postgres:16.4-alpine
