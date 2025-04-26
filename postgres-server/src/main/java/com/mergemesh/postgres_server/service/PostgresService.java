@@ -97,20 +97,30 @@ public class PostgresService {
                 String[] keys = entry.getKey().split("_");
                 String studentIdRemote = keys[0];
                 String courseIdRemote = keys[1];
-                String gradeRemote = entry.getValue().getData().get("grade");
+                String gradeRemote;
+                String operation = entry.getValue().getOperation();
+                if(operation.equals("INSERT")){
+                    gradeRemote = entry.getValue().getData().get("grade");
+                } else if(operation.equals("UPDATE")) {
+                    gradeRemote = entry.getValue().getData().get("newGrade");
+                } else {
+                    gradeRemote = "Not Available";
+                }
                 Map<String, String> data = new HashMap<>();
                 data.put("studentId", studentIdRemote);
                 data.put("courseId", courseIdRemote);
-                data.put("grade", gradeRemote);
+
 
                 OplogEntry selfEntry = gradeMapSelf.getOrDefault(entry.getKey(), null);
                 if (selfEntry == null) {
+                    data.put("grade", gradeRemote);
                     insertGrade(data);
                 } else {
                     // If the entry exists in both logs, update it
                     LocalDateTime selfTimestamp = LocalDateTime.parse(selfEntry.getTimestamp());
                     LocalDateTime remoteTimestamp = LocalDateTime.parse(entry.getValue().getTimestamp());
                     if (selfTimestamp.compareTo(remoteTimestamp) < 0) {
+                        data.put("newGrade", gradeRemote);
                         updateGrade(data);
                     }
                 }
@@ -139,7 +149,7 @@ public class PostgresService {
     }
 
     private List<OplogEntry> readRemoteLogFile(String server) {
-        String URL = server + "/log";
+        String URL = server + "/logs";
         ResponseEntity<OplogEntry[]> response = restTemplate.getForEntity(URL, OplogEntry[].class);
         List<OplogEntry> responseBody = Arrays.asList(response.getBody());
 
