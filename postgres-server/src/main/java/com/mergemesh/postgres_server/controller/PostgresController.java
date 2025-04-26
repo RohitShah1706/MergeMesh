@@ -20,6 +20,19 @@ public class PostgresController {
         return postgresService.getGrade(studentId, courseId);
     }
 
+    // SID, CID, GRADE
+    // Example: {"studentId": "123", "courseId": "456", "grade": "A"}
+    @PostMapping("/insert")
+    public String insertMarks(@RequestBody Map<String, String> req) {
+        try {
+            postgresService.insertGrade(req);
+            return "Grades inserted successfully.";
+        } catch (SQLException e) {
+            return "Failed to insert grades: " + e.getMessage();
+        }
+    }
+
+
     @PostMapping
     public String updateMarks(@RequestBody Map<String, String> req) {
         try {
