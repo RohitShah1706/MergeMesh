@@ -15,6 +15,7 @@ services:
       - ./output:/opt/hive/myoutput
     restart: unless-stopped
 
+  # docker exec -it postgres bash
   # psql -U myuser -d mergemesh
   # \i /mydata/init.sql
   postgres:

@@ -1,9 +1,12 @@
 package com.mergemesh.postgres_server.controller;
 
 import com.mergemesh.postgres_server.service.PostgresService;
+import com.mergemesh.shared.OplogEntry;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,7 +25,7 @@ public class PostgresController {
 
     // SID, CID, GRADE
     // Example: {"studentId": "123", "courseId": "456", "grade": "A"}
-    @PostMapping("/insert")
+    @PostMapping
     public String insertMarks(@RequestBody Map<String, String> req) {
         try {
             postgresService.insertGrade(req);
@@ -32,8 +35,7 @@ public class PostgresController {
         }
     }
 
-
-    @PostMapping
+    @PutMapping
     public String updateMarks(@RequestBody Map<String, String> req) {
         try {
             postgresService.updateGrade(req);
@@ -41,5 +43,10 @@ public class PostgresController {
         } catch (SQLException e) {
             return "Failed to update grades: " + e.getMessage();
         }
+    }
+
+    @GetMapping("/logs")
+    public List<OplogEntry> getLogValues() {
+        return postgresService.getLogValues();
     }
 }
