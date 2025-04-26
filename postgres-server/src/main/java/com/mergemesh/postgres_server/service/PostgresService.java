@@ -18,6 +18,22 @@ public class PostgresService {
         this.loggerService = loggerService;
     }
 
+    public void insertGrade(Map<String, String> req) throws SQLException {
+        String studentId = req.get("studentId");
+        String courseId = req.get("courseId");
+        String grade = req.get("grade");
+        String sql = "INSERT INTO graderoster (student_id, course_id, grade) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId);
+            ps.setString(2, courseId);
+            ps.setString(3, grade);
+            ps.executeUpdate();
+
+            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+            loggerService.logToFile(oplogEntry.toString());
+        }
+    }
+
     public void updateGrade(Map<String, String> req) throws SQLException {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
