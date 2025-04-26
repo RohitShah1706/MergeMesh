@@ -99,9 +99,9 @@ public class PostgresService {
                 String courseIdRemote = keys[1];
                 String gradeRemote;
                 String operation = entry.getValue().getOperation();
-                if(operation.equals("INSERT")){
+                if (operation.equals("INSERT")) {
                     gradeRemote = entry.getValue().getData().get("grade");
-                } else if(operation.equals("UPDATE")) {
+                } else if (operation.equals("UPDATE")) {
                     gradeRemote = entry.getValue().getData().get("newGrade");
                 } else {
                     gradeRemote = "Not Available";
@@ -109,7 +109,6 @@ public class PostgresService {
                 Map<String, String> data = new HashMap<>();
                 data.put("studentId", studentIdRemote);
                 data.put("courseId", courseIdRemote);
-
 
                 OplogEntry selfEntry = gradeMapSelf.getOrDefault(entry.getKey(), null);
                 if (selfEntry == null) {
@@ -153,7 +152,7 @@ public class PostgresService {
         ResponseEntity<OplogEntry[]> response = restTemplate.getForEntity(URL, OplogEntry[].class);
         List<OplogEntry> responseBody = Arrays.asList(response.getBody());
 
-        System.out.println("Grade from hive service: " + responseBody);
+        // System.out.println("Grade from hive service: " + responseBody);
         return responseBody;
     }
 

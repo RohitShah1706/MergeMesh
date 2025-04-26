@@ -31,7 +31,7 @@ public class MongoService {
     public String getGrade(String studentId, String courseId) {
         Document query = new Document("student-ID", studentId).append("course-id", courseId);
         Document result = collection.find(query).first();
-        
+
         return result != null ? result.getString("grade") : "Grade Not Available";
     }
 
@@ -52,15 +52,15 @@ public class MongoService {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("grade");
-    
+
         // Create a new document to insert
         Document doc = new Document("student-ID", studentId)
-                            .append("course-id", courseId)
-                            .append("grade", grade);
-    
+                .append("course-id", courseId)
+                .append("grade", grade);
+
         // Insert the document into the collection
         collection.insertOne(doc);
-    
+
         // Log the operation
         OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
         loggerService.logToFile(oplogEntry.toString());
@@ -100,9 +100,9 @@ public class MongoService {
                 String courseIdRemote = keys[1];
                 String gradeRemote;
                 String operation = entry.getValue().getOperation();
-                if(operation.equals("INSERT")){
+                if (operation.equals("INSERT")) {
                     gradeRemote = entry.getValue().getData().get("grade");
-                } else if(operation.equals("UPDATE")) {
+                } else if (operation.equals("UPDATE")) {
                     gradeRemote = entry.getValue().getData().get("newGrade");
                 } else {
                     gradeRemote = "Not Available";
@@ -110,7 +110,6 @@ public class MongoService {
                 Map<String, String> data = new HashMap<>();
                 data.put("studentId", studentIdRemote);
                 data.put("courseId", courseIdRemote);
-
 
                 OplogEntry selfEntry = gradeMapSelf.getOrDefault(entry.getKey(), null);
                 if (selfEntry == null) {
@@ -152,7 +151,7 @@ public class MongoService {
         ResponseEntity<OplogEntry[]> response = restTemplate.getForEntity(URL, OplogEntry[].class);
         List<OplogEntry> responseBody = Arrays.asList(response.getBody());
 
-        System.out.println("Grade from hive service: " + responseBody);
+        // System.out.println("Grade from hive service: " + responseBody);
         return responseBody;
     }
 }

@@ -1,7 +1,10 @@
 package com.mergemesh.hive_server;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mergemesh.hive_server.service.HiveService;
 
+import com.mergemesh.shared.OplogEntry;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -10,10 +13,13 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class App
 {
+    private static final Gson gson = new Gson();
+
     public static void main(String[] args ) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
         server.createContext("/", new MarksHandler());
@@ -31,10 +37,14 @@ public class App
             String path = exchange.getRequestURI().getPath();
 
             System.out.println("Received request: " + method + " " + path);
-            if ("GET".equals(method)) {
+            if ("GET".equals(method) && "/".equals(path)) {
                 handleGetGrade(exchange);
-            } else if("POST".equals(method)) {
+            } else if ("GET".equals(method) && "/logs".equals(path)) {
+                handleGetLogs(exchange);
+            } else if("POST".equals(method) && "/".equals(path)) {
                 handlePostGrade(exchange);
+            } else if ("POST".equals(method) && "/merge".equals(path)) {
+                handlePostMerge(exchange);
             } else if ("PUT".equals(method)) {
                 handleUpdateGrade(exchange);
             } else {
@@ -61,16 +71,7 @@ public class App
         }
 
         private void handlePostGrade(HttpExchange exchange) throws IOException {
-            InputStream is = exchange.getRequestBody();
-            StringBuilder body =  new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                body.append(line);
-            }
-            reader.close();
-
-            Map<String, String> req = parseJson(body.toString());
+            Map<String, String> req = getReqBody(exchange);
 
             String response;
             try {
@@ -88,17 +89,7 @@ public class App
         }
 
         private void handleUpdateGrade(HttpExchange exchange) throws IOException {
-            InputStream is = exchange.getRequestBody();
-            StringBuilder body = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                body.append(line);
-            }
-            reader.close();
-
-            Map<String, String> req = parseJson(body.toString());
-
+            Map<String, String> req = getReqBody(exchange);
             String response;
             try {
                 hiveService.updateGrade(req);
@@ -114,7 +105,39 @@ public class App
             os.close();
         }
 
-        private Map<String, String> queryToMap(String query) {
+        private void handleGetLogs(HttpExchange exchange) throws IOException {
+            List<OplogEntry> logs = hiveService.getLogValues();
+            String jsonResponse = logs.toString();
+
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
+
+            OutputStream os = exchange.getResponseBody();
+            os.write(jsonResponse.getBytes());
+            os.close();
+        }
+
+        private void handlePostMerge(HttpExchange exchange) throws IOException {
+            Map<String, String> req = getReqBody(exchange);
+            System.out.println(req);
+            String server = req.get("server");
+            String response;
+
+            try {
+                hiveService.merge(server);
+                response = "Merge completed successfully.";
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+            } catch (Exception e) {
+                response = "Failed to merge: " + e.getMessage();
+                exchange.sendResponseHeaders(500, response.getBytes().length);
+            }
+
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+
+        private static Map<String, String> queryToMap(String query) {
             Map<String, String> result = new HashMap<>();
             if (query != null) {
                 for (String param : query.split("&")) {
@@ -127,17 +150,17 @@ public class App
             return result;
         }
 
-        // Very basic JSON parser (assumes flat JSON with string values)
-        private Map<String, String> parseJson(String json) {
-            Map<String, String> map = new HashMap<>();
-            json = json.trim().replaceAll("[{}\"]", "");
-            for (String pair : json.split(",")) {
-                String[] kv = pair.split(":");
-                if (kv.length == 2) {
-                    map.put(kv[0].trim(), kv[1].trim());
-                }
+        private static Map<String, String> getReqBody(HttpExchange exchange) throws IOException {
+            InputStream is = exchange.getRequestBody();
+            StringBuilder body = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                body.append(line);
             }
-            return map;
+            reader.close();
+
+            return gson.fromJson(body.toString(), new TypeToken<Map<String, String>>(){}.getType());
         }
     }
 }
