@@ -10,17 +10,19 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class MongoService {
 
     private final MongoCollection<Document> collection;
+    private final RestTemplate restTemplate;
     private final LoggerService loggerService;
 
-    public MongoService(MongoClient mongoClient,LoggerService loggerService) {
+    public MongoService(MongoClient mongoClient, RestTemplate restTemplate, LoggerService loggerService) {
         MongoDatabase database = mongoClient.getDatabase("mergemesh");
         this.collection = database.getCollection("graderoster");
-
+        this.restTemplate = restTemplate;
         this.loggerService = loggerService;
     }
 

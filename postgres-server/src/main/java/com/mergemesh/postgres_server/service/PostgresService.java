@@ -1,7 +1,9 @@
 package com.mergemesh.postgres_server.service;
 
 import com.mergemesh.shared.OplogEntry;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,10 +13,12 @@ import java.util.Map;
 public class PostgresService {
 
     private final Connection conn;
+    private final RestTemplate restTemplate;
     private final LoggerService loggerService;
 
-    public PostgresService(Connection conn, LoggerService loggerService) throws SQLException {
+    public PostgresService(Connection conn, RestTemplate restTemplate, LoggerService loggerService) throws SQLException {
         this.conn = conn;
+        this.restTemplate = restTemplate;
         this.loggerService = loggerService;
     }
 
@@ -58,5 +62,13 @@ public class PostgresService {
             ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getString(1) : "F";
         }
+    }
+
+    private void tryQueryOtherBackend() {
+        String URL = "http://localhost:8081?studentId=SID7072&courseId=CSE007";
+        ResponseEntity<String> response = restTemplate.getForEntity(URL, String.class);
+
+        String responseBody = response.getBody();
+        System.out.println("Grade from hive service: " + responseBody);
     }
 }
