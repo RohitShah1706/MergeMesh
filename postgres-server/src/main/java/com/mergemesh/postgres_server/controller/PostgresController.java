@@ -49,4 +49,10 @@ public class PostgresController {
     public List<OplogEntry> getLogValues() {
         return postgresService.getLogValues();
     }
+
+    @PostMapping("/merge")
+    public String merge(@RequestBody Map<String, String> req) {
+        postgresService.merge(req.get("server"));
+        return "Merge completed successfully.";
+    }
 }

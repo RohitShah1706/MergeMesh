@@ -1,7 +1,10 @@
 package com.mergemesh.hive_server.service;
 
 import com.mergemesh.hive_server.config.HiveConfig;
+import com.mergemesh.hive_server.config.RestConfig;
 import com.mergemesh.shared.OplogEntry;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,10 +15,12 @@ import java.util.Map;
 public class HiveService {
 
     private final HiveConfig hiveConfig;
+    private final RestConfig restConfig;
     private final LoggerService loggerService;
 
     public HiveService() {
         this.hiveConfig = new HiveConfig();
+        this.restConfig = new RestConfig();
         this.loggerService = new LoggerService();
     }
 
@@ -29,6 +34,10 @@ public class HiveService {
         }
 
         return connection;
+    }
+
+    public RestTemplate getRestTemplate() {
+        return this.restConfig.getRestTemplate();
     }
 
     public String getGrade(String studentId, String courseId) {
@@ -74,5 +83,36 @@ public class HiveService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void insertGrade(Map<String, String> req) {
+        String studentId = req.get("studentId");
+        String courseId = req.get("courseId");
+        String grade = req.get("grade");
+
+        Connection connection = getHiveConnection();
+
+        try {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO graderoster (student_id, course_id, grade) VALUES (?, ?, ?)");
+            sql.setString(1, studentId);
+            sql.setString(2, courseId);
+            sql.setString(3, grade);
+
+            sql.executeUpdate();
+
+            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+            loggerService.logToFile(oplogEntry.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void tryQueryOtherBackend() {
+        RestTemplate restTemplate = getRestTemplate();
+        String URL = "http://localhost:5000/?studentId=SID7072&courseId=CSE007";
+        ResponseEntity<String> response = restTemplate.getForEntity(URL, String.class);
+
+        String responseBody = response.getBody();
+        System.out.println("Grade from postgres service: " + responseBody);
     }
 }

@@ -27,7 +27,7 @@ public class LoggerService {
     }
 
     public List <OplogEntry> readLogFile() {
-        String logFilePath = "C:/Users/Vidhish17/Desktop/Semester-8/NoSQL/Project/MergeMesh/postgres-server/logs/oplog_postgres.log";
+        String logFilePath = "./logs/oplog_postgres.log";
         List<OplogEntry> oplogEntries = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(logFilePath))) {
             String line;

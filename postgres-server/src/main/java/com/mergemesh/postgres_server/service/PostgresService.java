@@ -1,16 +1,10 @@
 package com.mergemesh.postgres_server.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mergemesh.shared.OplogEntry;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import org.springframework.web.client.RestTemplate;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,10 +13,13 @@ import java.util.*;
 public class PostgresService {
 
     private final Connection conn;
+    private final RestTemplate restTemplate;
     private final LoggerService loggerService;
 
-    public PostgresService(Connection conn, LoggerService loggerService) throws SQLException {
+    public PostgresService(Connection conn, RestTemplate restTemplate, LoggerService loggerService)
+            throws SQLException {
         this.conn = conn;
+        this.restTemplate = restTemplate;
         this.loggerService = loggerService;
     }
 
@@ -101,13 +98,13 @@ public class PostgresService {
                 String studentIdRemote = keys[0];
                 String courseIdRemote = keys[1];
                 String gradeRemote = entry.getValue().getData().get("grade");
-                Map <String, String> data = new HashMap<>();
+                Map<String, String> data = new HashMap<>();
                 data.put("studentId", studentIdRemote);
                 data.put("courseId", courseIdRemote);
                 data.put("grade", gradeRemote);
 
                 OplogEntry selfEntry = gradeMapSelf.getOrDefault(entry.getKey(), null);
-                if(selfEntry == null) {
+                if (selfEntry == null) {
                     insertGrade(data);
                 } else {
                     // If the entry exists in both logs, update it
@@ -121,8 +118,6 @@ public class PostgresService {
             }
         } catch (SQLException e) {
             System.out.println("SQL Exception: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("IO Exception: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
         }
@@ -143,29 +138,20 @@ public class PostgresService {
         return new ArrayList<>(logMap.values());
     }
 
-    private List<OplogEntry> readRemoteLogFile(String server) throws IOException {
-        try {
-            URL url = new URI(server + "/logs").toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/json");
+    private List<OplogEntry> readRemoteLogFile(String server) {
+        String URL = server + "/log";
+        ResponseEntity<OplogEntry[]> response = restTemplate.getForEntity(URL, OplogEntry[].class);
+        List<OplogEntry> responseBody = Arrays.asList(response.getBody());
 
-            if (connection.getResponseCode() == 200) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    // Assuming the response is a JSON array of OplogEntry objects
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    return Arrays.asList(objectMapper.readValue(response.toString(), OplogEntry[].class));
-                }
-            } else {
-                throw new IOException("Failed to fetch remote log file: HTTP " + connection.getResponseCode());
-            }
-        } catch (Exception e) {
-            throw new IOException("Invalid server URL: " + server, e);
-        }
+        System.out.println("Grade from hive service: " + responseBody);
+        return responseBody;
+    }
+
+    private void tryQueryOtherBackend() {
+        String URL = "http://localhost:8081?studentId=SID7072&courseId=CSE007";
+        ResponseEntity<String> response = restTemplate.getForEntity(URL, String.class);
+
+        String responseBody = response.getBody();
+        System.out.println("Grade from hive service: " + responseBody);
     }
 }
