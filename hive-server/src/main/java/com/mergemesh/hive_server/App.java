@@ -32,15 +32,17 @@ public class App
 
             System.out.println("Received request: " + method + " " + path);
             if ("GET".equals(method)) {
-                handleGet(exchange);
-            } else if ("POST".equals(method)) {
-                handlePost(exchange);
+                handleGetGrade(exchange);
+            } else if("POST".equals(method)) {
+                handlePostGrade(exchange);
+            } else if ("PUT".equals(method)) {
+                handleUpdateGrade(exchange);
             } else {
                 exchange.sendResponseHeaders(405, -1); // Method Not Allowed
             }
         }
 
-        private void handleGet(HttpExchange exchange) throws IOException {
+        private void handleGetGrade(HttpExchange exchange) throws IOException {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             String studentId = params.get("studentId");
             String courseId = params.get("courseId");
@@ -58,7 +60,34 @@ public class App
             os.close();
         }
 
-        private void handlePost(HttpExchange exchange) throws IOException {
+        private void handlePostGrade(HttpExchange exchange) throws IOException {
+            InputStream is = exchange.getRequestBody();
+            StringBuilder body =  new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                body.append(line);
+            }
+            reader.close();
+
+            Map<String, String> req = parseJson(body.toString());
+
+            String response;
+            try {
+                hiveService.insertGrade(req);
+                response = "Grades inserted successfully.";
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+            } catch (Exception e) {
+                response = "Failed to insert grades: " + e.getMessage();
+                exchange.sendResponseHeaders(500, response.getBytes().length);
+            }
+
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+
+        private void handleUpdateGrade(HttpExchange exchange) throws IOException {
             InputStream is = exchange.getRequestBody();
             StringBuilder body = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));

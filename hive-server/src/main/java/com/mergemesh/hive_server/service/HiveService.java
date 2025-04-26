@@ -75,4 +75,26 @@ public class HiveService {
             e.printStackTrace();
         }
     }
+
+    public void insertGrade(Map<String, String> req) {
+        String studentId = req.get("studentId");
+        String courseId = req.get("courseId");
+        String grade = req.get("grade");
+
+        Connection connection = getHiveConnection();
+
+        try {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO graderoster (student_id, course_id, grade) VALUES (?, ?, ?)");
+            sql.setString(1, studentId);
+            sql.setString(2, courseId);
+            sql.setString(3, grade);
+
+            sql.executeUpdate();
+
+            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+            loggerService.logToFile(oplogEntry.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

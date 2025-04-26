@@ -1,12 +1,12 @@
 package com.mergemesh.mongo_server.controller;
 
 import com.mergemesh.mongo_server.service.MongoService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/mongo")
 public class MongoController {
 
     private final MongoService mongoService;
