@@ -1,4 +1,4 @@
-package com.mergemesh.config;
+package com.mergemesh.hive_server.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

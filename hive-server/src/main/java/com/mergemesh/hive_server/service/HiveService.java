@@ -1,18 +1,22 @@
-package com.mergemesh.service;
+package com.mergemesh.hive_server.service;
 
-import com.mergemesh.config.HiveConfig;
+import com.mergemesh.hive_server.config.HiveConfig;
+import com.mergemesh.shared.OplogEntry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class HiveService {
 
-    private HiveConfig hiveConfig;
+    private final HiveConfig hiveConfig;
+    private final LoggerService loggerService;
 
     public HiveService() {
         this.hiveConfig = new HiveConfig();
+        this.loggerService = new LoggerService();
     }
 
     public Connection getHiveConnection() {
@@ -64,6 +68,9 @@ public class HiveService {
             sql.setString(3, courseId);
 
             sql.executeUpdate();
+
+            OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, LocalDateTime.now().toString());
+            loggerService.logToFile(oplogEntry.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
