@@ -41,5 +41,11 @@ public class MongoController {
     public List<OplogEntry> getLogValues() {
         return mongoService.getLogValues();
     }
-    
+
+    @PostMapping("/merge")
+    public String merge(@RequestBody Map<String, String> req) {
+        mongoService.merge(req.get("server"));
+        return "Merge completed successfully.";
+    }
+
 }
