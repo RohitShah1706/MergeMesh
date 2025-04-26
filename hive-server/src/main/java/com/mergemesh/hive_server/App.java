@@ -1,6 +1,6 @@
-package com.mergemesh;
+package com.mergemesh.hive_server;
 
-import com.mergemesh.service.HiveService;
+import com.mergemesh.hive_server.service.HiveService;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
@@ -28,7 +28,9 @@ public class App
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
 
+            System.out.println("Received request: " + method + " " + path);
             if ("GET".equals(method)) {
                 handleGet(exchange);
             } else if ("POST".equals(method)) {
