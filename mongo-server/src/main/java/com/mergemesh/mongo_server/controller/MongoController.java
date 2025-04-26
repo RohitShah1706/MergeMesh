@@ -2,8 +2,10 @@ package com.mergemesh.mongo_server.controller;
 
 import com.mergemesh.mongo_server.service.MongoService;
 
+import com.mergemesh.shared.OplogEntry;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +35,11 @@ public class MongoController {
     public String insertGrade(@RequestBody Map<String, String> req) {
         mongoService.insertGrade(req);
         return "Mongo grades inserted successfully";
+    }
+
+    @GetMapping("/logs")
+    public List<OplogEntry> getLogValues() {
+        return mongoService.getLogValues();
     }
     
 }
