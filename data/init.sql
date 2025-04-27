@@ -1,5 +1,7 @@
 -- Create the table
-CREATE TABLE IF NOT EXISTS graderoster (
+DROP TABLE IF EXISTS graderoster;
+
+CREATE TABLE graderoster (
     student_id TEXT,
     course_id TEXT,
     roll_no TEXT,

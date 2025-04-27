@@ -98,7 +98,13 @@ async function handleCommand(serverName, command, args) {
 
 // Main function
 async function main() {
-  const filePath = path.join(__dirname, "testcase.in");
+  const fileName = process.argv[2]; // Get the file name from the CLI arguments
+  if (!fileName) {
+    console.error("Usage: node parser.js <filename>");
+    process.exit(1);
+  }
+
+  const filePath = path.join(__dirname, fileName);
 
   const data = fs.readFileSync(filePath, "utf8");
   const lines = data

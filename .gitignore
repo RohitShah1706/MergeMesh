@@ -1,5 +1,4 @@
 *.pdf
-output/
 previous/
 hive_server/
 *.log

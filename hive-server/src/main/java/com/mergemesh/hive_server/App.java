@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class App
 {
@@ -23,7 +24,7 @@ public class App
     public static void main(String[] args ) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
         server.createContext("/", new MarksHandler());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(Executors.newCachedThreadPool()); // allow concurrent request handling
         server.start();
         System.out.println("Server started at http://localhost:8081/");
     }

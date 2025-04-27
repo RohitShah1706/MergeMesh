@@ -5,7 +5,9 @@ SET hive.exec.dynamic.partition.mode=nonstrict;
 SET hive.compactor.initiator.on=true;
 SET hive.compactor.worker.threads=1;
 
-CREATE TABLE IF NOT EXISTS graderoster (
+DROP TABLE IF EXISTS graderoster;
+
+CREATE TABLE graderoster (
     student_id STRING,
     course_id STRING,
     roll_no STRING,
@@ -19,6 +21,8 @@ TBLPROPERTIES (
 );
 
 -- Step 1: Create a staging table using TEXTFILE
+DROP TABLE IF EXISTS graderoster_stage;
+
 CREATE EXTERNAL TABLE graderoster_stage (
     student_id STRING,
     course_id STRING,
