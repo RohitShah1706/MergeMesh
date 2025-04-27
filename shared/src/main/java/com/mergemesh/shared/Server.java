@@ -57,6 +57,7 @@ public interface Server {
                 OplogEntry selfEntry = gradeMapSelf.getOrDefault(entry.getKey(), null);
                 if (selfEntry == null) {
                     data.put("grade", gradeRemote);
+                    data.put("timestamp",entry.getValue().getTimestamp());
                     insertGrade(data);
                 } else {
                     java.time.LocalDateTime selfTimestamp = java.time.LocalDateTime.parse(selfEntry.getTimestamp());
@@ -64,6 +65,7 @@ public interface Server {
                             .parse(entry.getValue().getTimestamp());
                     if (selfTimestamp.compareTo(remoteTimestamp) < 0) {
                         data.put("newGrade", gradeRemote);
+                        data.put("timestamp",entry.getValue().getTimestamp());
                         updateGrade(data);
                     }
                 }
