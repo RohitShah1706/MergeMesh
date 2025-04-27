@@ -29,6 +29,7 @@ public class PostgresService implements Server {
         String courseId = req.get("courseId");
         String grade = req.get("grade");
         String timestamp = req.get("timestamp");
+        req.remove(timestamp);
 
         String sql = "INSERT INTO graderoster (student_id, course_id, grade) VALUES (?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,6 +48,7 @@ public class PostgresService implements Server {
         String courseId = req.get("courseId");
         String grade = req.get("newGrade");
         String timestamp = req.get("timestamp");
+        req.remove(timestamp);
 
         String sql = "UPDATE graderoster SET grade = ? WHERE student_id = ? AND course_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
