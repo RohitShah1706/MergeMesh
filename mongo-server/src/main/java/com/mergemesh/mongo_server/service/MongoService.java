@@ -39,12 +39,14 @@ public class MongoService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("newGrade");
+        String timestamp = req.get("timestamp");
 
         Document query = new Document("student-ID", studentId).append("course-id", courseId);
         Document update = new Document("$set", new Document("grade", grade));
         collection.updateOne(query, update);
 
-        OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, LocalDateTime.now().toString());
+        req.remove("timestamp");
+        OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, timestamp);
         loggerService.logToFile(oplogEntry.toString());
     }
 
@@ -52,6 +54,7 @@ public class MongoService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("grade");
+        String timestamp = req.get("timestamp");
 
         // Create a new document to insert
         Document doc = new Document("student-ID", studentId)
@@ -61,8 +64,9 @@ public class MongoService implements Server {
         // Insert the document into the collection
         collection.insertOne(doc);
 
+        req.remove("timestamp");
         // Log the operation
-        OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+        OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, timestamp);
         loggerService.logToFile(oplogEntry.toString());
     }
 

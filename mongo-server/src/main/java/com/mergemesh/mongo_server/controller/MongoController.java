@@ -5,6 +5,7 @@ import com.mergemesh.mongo_server.service.MongoService;
 import com.mergemesh.shared.OplogEntry;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,12 +28,16 @@ public class MongoController {
 
     @PutMapping
     public String updateGrade(@RequestBody Map<String, String> req) {
+        String localDateTime = LocalDateTime.now().toString();
+        req.put("timestamp",localDateTime);
         mongoService.updateGrade(req);
         return "Mongo grades updated successfully.";
     }
 
     @PostMapping
     public String insertGrade(@RequestBody Map<String, String> req) {
+        String localDateTime = LocalDateTime.now().toString();
+        req.put("timestamp",localDateTime);
         mongoService.insertGrade(req);
         return "Mongo grades inserted successfully";
     }
