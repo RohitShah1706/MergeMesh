@@ -28,6 +28,8 @@ public class PostgresService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("grade");
+        String timestamp = req.get("timestamp");
+
         String sql = "INSERT INTO graderoster (student_id, course_id, grade) VALUES (?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
@@ -35,7 +37,7 @@ public class PostgresService implements Server {
             ps.setString(3, grade);
             ps.executeUpdate();
 
-            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, timestamp);
             loggerService.logToFile(oplogEntry.toString());
         }
     }
@@ -44,6 +46,8 @@ public class PostgresService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("newGrade");
+        String timestamp = req.get("timestamp");
+
         String sql = "UPDATE graderoster SET grade = ? WHERE student_id = ? AND course_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, grade);
@@ -51,7 +55,7 @@ public class PostgresService implements Server {
             ps.setString(3, courseId);
             ps.executeUpdate();
 
-            OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, LocalDateTime.now().toString());
+            OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, timestamp);
             loggerService.logToFile(oplogEntry.toString());
         }
     }
