@@ -6,6 +6,7 @@ import com.mergemesh.shared.OplogEntry;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class PostgresController {
     // Example: {"studentId": "123", "courseId": "456", "grade": "A"}
     @PostMapping
     public String insertMarks(@RequestBody Map<String, String> req) {
+        req.put("timestamp", LocalDateTime.now().toString());
         try {
             postgresService.insertGrade(req);
             return "Grades inserted successfully.";
@@ -37,6 +39,7 @@ public class PostgresController {
 
     @PutMapping
     public String updateMarks(@RequestBody Map<String, String> req) {
+        req.put("timestamp", LocalDateTime.now().toString());
         try {
             postgresService.updateGrade(req);
             return "Grades updated successfully.";
