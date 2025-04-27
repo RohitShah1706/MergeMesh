@@ -32,8 +32,8 @@ STORED AS TEXTFILE
 TBLPROPERTIES ("skip.header.line.count"="1");
 
 -- Step 2: Load data into the staging table
-LOAD DATA LOCAL INPATH '/opt/hive/mydata/student_course_grades.csv'
-INTO TABLE graderoster_stage;
+-- LOAD DATA LOCAL INPATH '/opt/hive/mydata/student_course_grades.csv'
+-- INTO TABLE graderoster_stage;
 
 -- Step 3: Insert into ORC table
-INSERT INTO TABLE graderoster SELECT * FROM graderoster_stage;
+-- INSERT INTO TABLE graderoster SELECT * FROM graderoster_stage;
