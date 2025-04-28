@@ -46,13 +46,23 @@ async function update(url, args) {
   console.log(`Updated at ${url}:`, body);
 }
 
+// async function read(url, args) {
+//   const params = {
+//     studentId: args[0],
+//     courseId: args[1],
+//   };
+//   await axios.get(`${url}/`, { params });
+//   console.log(`Read from ${url} with params:`, params);
+// }
+
 async function read(url, args) {
   const params = {
     studentId: args[0],
     courseId: args[1],
   };
-  await axios.get(`${url}/`, { params });
+  const response = await axios.get(`${url}/`, { params });
   console.log(`Read from ${url} with params:`, params);
+  console.log("Response data:", response.data);
 }
 
 async function merge(url, args) {
