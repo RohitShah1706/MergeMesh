@@ -68,6 +68,8 @@ public class HiveService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("newGrade");
+        String timestamp = req.get("timestamp");
+        req.remove("timestamp");
 
         Connection connection = getHiveConnection();
 
@@ -80,7 +82,7 @@ public class HiveService implements Server {
 
             sql.executeUpdate();
 
-            OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, LocalDateTime.now().toString());
+            OplogEntry oplogEntry = new OplogEntry("UPDATE", "graderoster", req, timestamp);
             loggerService.logToFile(oplogEntry.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,6 +93,8 @@ public class HiveService implements Server {
         String studentId = req.get("studentId");
         String courseId = req.get("courseId");
         String grade = req.get("grade");
+        String timestamp = req.get("timestamp");
+        req.remove("timestamp");
 
         Connection connection = getHiveConnection();
 
@@ -103,7 +107,7 @@ public class HiveService implements Server {
 
             sql.executeUpdate();
 
-            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, LocalDateTime.now().toString());
+            OplogEntry oplogEntry = new OplogEntry("INSERT", "graderoster", req, timestamp);
             loggerService.logToFile(oplogEntry.toString());
         } catch (Exception e) {
             e.printStackTrace();

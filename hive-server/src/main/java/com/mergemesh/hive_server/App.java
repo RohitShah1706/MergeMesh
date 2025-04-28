@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ public class App
 
         private void handlePostGrade(HttpExchange exchange) throws IOException {
             Map<String, String> req = getReqBody(exchange);
+            String localDateTime = LocalDateTime.now().toString();
+            req.put("timestamp",localDateTime);
 
             String response;
             try {
@@ -91,6 +94,8 @@ public class App
 
         private void handleUpdateGrade(HttpExchange exchange) throws IOException {
             Map<String, String> req = getReqBody(exchange);
+            String localDateTime = LocalDateTime.now().toString();
+            req.put("timestamp",localDateTime);
             String response;
             try {
                 hiveService.updateGrade(req);
